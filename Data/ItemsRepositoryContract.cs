@@ -8,7 +8,7 @@ public interface ItemsRepositoryContract
 
     public Item GetItemById(Guid id);
 
-    public Item SaveItem(Item item);
+    public void SaveItem(Item item);
 
     public void UpdateItem(Item item);
 

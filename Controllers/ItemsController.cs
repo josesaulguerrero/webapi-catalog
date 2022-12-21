@@ -37,13 +37,14 @@ public class ItemsController : ControllerBase
     {
         Item mappedItem = new()
         {
+            Id = Guid.NewGuid(),
             Name = createItemDTO.Name,
             Price = createItemDTO.Price,
             CreatedAt = DateTimeOffset.Now,
         };
 
-        var result = this.itemsRepository.SaveItem(mappedItem);
-        return CreatedAtAction(nameof(GetItemById), new { id = result.Id }, ItemDTO.fromEntity(result));
+        this.itemsRepository.SaveItem(mappedItem);
+        return CreatedAtAction(nameof(GetItemById), new { id = mappedItem.Id }, ItemDTO.fromEntity(mappedItem));
     }
 
     [HttpPut("update")]

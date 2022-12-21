@@ -11,7 +11,7 @@ public class MongoDBSettings
     {
         get
         {
-            return $"mongodb://{Username}:{Password}@{Host}:{Port}/?authMechanism=DEFAULT";
+            return $"mongodb://{Username}:{Password}@{Host}:{Port}/?authMechanism=SCRAM-SHA-256";
         }
     }
 }

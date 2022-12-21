@@ -18,6 +18,7 @@ public static class Startup
 
         // mongodb settings
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+        BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
         builder.Services.AddSingleton<IMongoClient>(_ =>
         {
             MongoDBSettings? settings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();

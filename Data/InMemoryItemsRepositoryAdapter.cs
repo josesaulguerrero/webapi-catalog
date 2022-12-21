@@ -20,18 +20,9 @@ public class InMemoryItemsRepositoryAdapter : ItemsRepositoryContract
 
     public Item GetItemById(Guid id) => this.items.SingleOrDefault(item => item.Id == id);
 
-    public Item SaveItem(Item item)
+    public void SaveItem(Item item)
     {
-        Item itemWithId = new()
-        {
-            Id = Guid.NewGuid(),
-            Name = item.Name,
-            Price = item.Price,
-            CreatedAt = item.CreatedAt
-        };
-        this.items.Add(itemWithId);
-
-        return itemWithId;
+        this.items.Add(item);
     }
 
     public void UpdateItem(Item item)

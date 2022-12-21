@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Catalog.Data;
@@ -8,6 +9,7 @@ public class MongoDBItemsRepositoryAdapter : ItemsRepositoryContract
     private const string _DBName = "Catalog";
     private const string _DBCollectionName = "items";
     private readonly IMongoCollection<Item> _items;
+    private static readonly FilterDefinitionBuilder<Item> _filterDefinitionBuilder = Builders<Item>.Filter;
 
     public MongoDBItemsRepositoryAdapter(IMongoClient mongoClient)
     {
@@ -17,26 +19,26 @@ public class MongoDBItemsRepositoryAdapter : ItemsRepositoryContract
 
     public void DeleteItem(Guid id)
     {
-        throw new NotImplementedException();
+        _items.DeleteOne(item => item.Id == id);
     }
 
     public IEnumerable<Item> GetAllItems()
     {
-        throw new NotImplementedException();
+        return _items.Find(new BsonDocument()).ToList();
     }
 
     public Item GetItemById(Guid id)
     {
-        throw new NotImplementedException();
+        return _items.Find(_filterDefinitionBuilder.Eq(item => item.Id, id)).SingleOrDefault();
     }
 
-    public Item SaveItem(Item item)
+    public void SaveItem(Item item)
     {
         _items.InsertOne(item);
     }
 
     public void UpdateItem(Item item)
     {
-        throw new NotImplementedException();
+        _items.ReplaceOne(_filterDefinitionBuilder.Eq(item => item.Id, item.Id), item);
     }
 }
