@@ -1,11 +1,31 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Catalog.Data;
+using Catalog.Settings;
+using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Driver;
 
 namespace Catalog;
 
 public static class Startup
 {
+    private static IConfiguration Configuration;
+
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
+        Configuration = builder.Configuration;
+
+        // mongodb settings
+        BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+        builder.Services.AddSingleton<IMongoClient>(_ =>
+        {
+            MongoDBSettings? settings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
+            return new MongoClient(settings.ConnectionString);
+        });
+
+        builder.Services.AddSingleton<ItemsRepositoryContract, MongoDBItemsRepositoryAdapter>();
+
         builder.Services.AddControllers();
 
         // Add Swagger support
