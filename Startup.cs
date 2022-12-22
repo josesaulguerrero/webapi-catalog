@@ -17,11 +17,11 @@ public static class Startup
         Configuration = builder.Configuration;
 
         // mongodb settings
+        MongoDBSettings? settings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
         builder.Services.AddSingleton<IMongoClient>(_ =>
         {
-            MongoDBSettings? settings = Configuration.GetSection(nameof(MongoDBSettings)).Get<MongoDBSettings>();
             return new MongoClient(settings.ConnectionString);
         });
 
@@ -41,6 +41,11 @@ public static class Startup
                 new OpenApiInfo { Title = "Catalog API", Description = "Keep track of your business items.", Version = "v1" }
             );
         });
+
+        // Add health checks
+        builder.Services
+            .AddHealthChecks()
+            .AddMongoDb(settings.ConnectionString, name: "mongodb", timeout: TimeSpan.FromSeconds(3));
     }
 
     public static void ConfigureMiddlewares(this WebApplication app)
@@ -58,5 +63,6 @@ public static class Startup
         //app.UseAuthorization();
 
         app.MapControllers();
+        app.MapHealthChecks("/health");
     }
 }
