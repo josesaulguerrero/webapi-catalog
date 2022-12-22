@@ -4,13 +4,13 @@ namespace Catalog.Data;
 
 public interface ItemsRepositoryContract
 {
-    public IEnumerable<Item> GetAllItems();
+    public Task<IEnumerable<Item>> GetAllItemsAsync();
 
-    public Item GetItemById(Guid id);
+    public Task<Item> GetItemByIdAsync(Guid id);
 
-    public void SaveItem(Item item);
+    public Task SaveItemAsync(Item item);
 
-    public void UpdateItem(Item item);
+    public Task UpdateItemAsync(Item item);
 
-    public void DeleteItem(Guid id);
+    public Task DeleteItemAsync(Guid id);
 }

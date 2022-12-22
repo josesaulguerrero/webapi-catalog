@@ -11,23 +11,20 @@ public class InMemoryItemsRepositoryAdapter : ItemsRepositoryContract
         new Item {Id = Guid.NewGuid(), Name = "Gold Armor", Price = 120.56M, CreatedAt = DateTimeOffset.Now},
     };
 
-    public void DeleteItem(Guid id)
+    public async Task DeleteItemAsync(Guid id) => await Task.Run(() => this.items.RemoveAll(item => item.Id == id));
+
+    public async Task<IEnumerable<Item>> GetAllItemsAsync() => await Task.Run(() => this.items);
+
+    public async Task<Item> GetItemByIdAsync(Guid id) => await Task.Run(() => this.items.SingleOrDefault(item => item.Id == id));
+
+    public async Task SaveItemAsync(Item item) => await Task.Run(() => this.items.Add(item));
+
+    public async Task UpdateItemAsync(Item item)
     {
-        this.items.RemoveAll(item => item.Id == id);
-    }
-
-    public IEnumerable<Item> GetAllItems() => this.items;
-
-    public Item GetItemById(Guid id) => this.items.SingleOrDefault(item => item.Id == id);
-
-    public void SaveItem(Item item)
-    {
-        this.items.Add(item);
-    }
-
-    public void UpdateItem(Item item)
-    {
-        int itemIndex = this.items.FindIndex(i => i.Id == item.Id);
-        items[itemIndex] = item;
+        await Task.Run(() =>
+        {
+            int itemIndex = this.items.FindIndex(i => i.Id == item.Id);
+            items[itemIndex] = item;
+        });
     }
 }

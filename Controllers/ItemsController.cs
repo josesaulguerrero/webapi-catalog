@@ -19,21 +19,26 @@ public class ItemsController : ControllerBase
     }
 
     [HttpGet]
-    public IEnumerable<ItemDTO> GetAllItems() => this.itemsRepository
-        .GetAllItems()
-        .Select(ItemDTO.fromEntity);
+    public async Task<IEnumerable<ItemDTO>> GetAllItems()
+    {
+        var items = await this.itemsRepository
+            .GetAllItemsAsync();
+
+        return items.Select(ItemDTO.fromEntity);
+    }
 
     [HttpGet("{id}")]
-    public ActionResult<ItemDTO> GetItemById(Guid id)
+    public async Task<ActionResult<ItemDTO>> GetItemById(Guid id)
     {
-        var result = this.itemsRepository.GetItemById(id);
+        var result = await this.itemsRepository.GetItemByIdAsync(id);
+
         return result is not null
             ? ItemDTO.fromEntity(result)
             : NotFound();
     }
 
     [HttpPost("create")]
-    public ActionResult<ItemDTO> SaveItem(CreateItemDTO createItemDTO)
+    public async Task<ActionResult<ItemDTO>> SaveItem(CreateItemDTO createItemDTO)
     {
         Item mappedItem = new()
         {
@@ -42,19 +47,17 @@ public class ItemsController : ControllerBase
             Price = createItemDTO.Price,
             CreatedAt = DateTimeOffset.Now,
         };
+        await itemsRepository.SaveItemAsync(mappedItem);
 
-        this.itemsRepository.SaveItem(mappedItem);
         return CreatedAtAction(nameof(GetItemById), new { id = mappedItem.Id }, ItemDTO.fromEntity(mappedItem));
     }
 
     [HttpPut("update")]
-    public ActionResult<ItemDTO> UpdateItem(UpdateItemDTO updateItemDTO)
+    public async Task<ActionResult<ItemDTO>> UpdateItem(UpdateItemDTO updateItemDTO)
     {
-        Item currentForm = itemsRepository.GetItemById(updateItemDTO.Id);
-
+        Item currentForm = await itemsRepository.GetItemByIdAsync(updateItemDTO.Id);
         if (currentForm is null) return NotFound();
-
-        this.itemsRepository.UpdateItem(new()
+        await this.itemsRepository.UpdateItemAsync(new()
         {
             Id = currentForm.Id,
             Name = updateItemDTO.Name,
@@ -66,13 +69,11 @@ public class ItemsController : ControllerBase
     }
 
     [HttpDelete("delete/{itemId}")]
-    public ActionResult<ItemDTO> DeleteItem(Guid itemId)
+    public async Task<ActionResult<ItemDTO>> DeleteItem(Guid itemId)
     {
-        Item currentForm = itemsRepository.GetItemById(itemId);
-
+        Item currentForm = await itemsRepository.GetItemByIdAsync(itemId);
         if (currentForm is null) return NotFound();
-
-        this.itemsRepository.DeleteItem(currentForm.Id);
+        await itemsRepository.DeleteItemAsync(currentForm.Id);
 
         return NoContent();
     }

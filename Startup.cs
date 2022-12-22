@@ -27,7 +27,10 @@ public static class Startup
 
         builder.Services.AddSingleton<ItemsRepositoryContract, MongoDBItemsRepositoryAdapter>();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(options =>
+        {
+            options.SuppressAsyncSuffixInActionNames = false;
+        });
 
         // Add Swagger support
         builder.Services.AddEndpointsApiExplorer();
