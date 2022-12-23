@@ -24,7 +24,7 @@ public class ItemsController : ControllerBase
         var items = await this.itemsRepository
             .GetAllItemsAsync();
 
-        return items.Select(ItemDTO.fromEntity);
+        return items.Select(ItemDTO.FromEntity);
     }
 
     [HttpGet("{id}")]
@@ -33,7 +33,7 @@ public class ItemsController : ControllerBase
         var result = await this.itemsRepository.GetItemByIdAsync(id);
 
         return result is not null
-            ? ItemDTO.fromEntity(result)
+            ? ItemDTO.FromEntity(result)
             : NotFound();
     }
 
@@ -49,7 +49,7 @@ public class ItemsController : ControllerBase
         };
         await itemsRepository.SaveItemAsync(mappedItem);
 
-        return CreatedAtAction(nameof(GetItemById), new { id = mappedItem.Id }, ItemDTO.fromEntity(mappedItem));
+        return CreatedAtAction(nameof(GetItemById), new { id = mappedItem.Id }, ItemDTO.FromEntity(mappedItem));
     }
 
     [HttpPut("update")]

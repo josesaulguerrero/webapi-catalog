@@ -9,7 +9,7 @@ public record ItemDTO
     public decimal Price { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
 
-    public static ItemDTO fromEntity(Item item)
+    public static ItemDTO FromEntity(Item item)
     {
         return new ItemDTO
         {
